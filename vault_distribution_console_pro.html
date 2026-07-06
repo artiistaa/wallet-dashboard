@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Vault Distribution Console Pro</title>
+<style>
+:root{
+  --bg:#04060b; --card:rgba(12,18,31,.82); --panel:rgba(255,255,255,.045);
+  --border:rgba(0,255,170,.20); --green:#00ffaa; --blue:#2fb8ff; --red:#ff3b6b;
+  --yellow:#ffd166; --purple:#b967ff; --text:#eafff8; --muted:#8ba79f;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;color:var(--text);min-height:100vh;overflow-x:hidden;
+  background:radial-gradient(circle at 12% 6%,rgba(0,255,170,.15),transparent 28%),
+             radial-gradient(circle at 90% 10%,rgba(47,184,255,.13),transparent 30%),
+             radial-gradient(circle at 50% 100%,rgba(185,103,255,.10),transparent 36%),
+             linear-gradient(180deg,#05070d,#020309);
+}
+body:before{
+  content:"";position:fixed;inset:0;pointer-events:none;opacity:.8;
+  background-image:linear-gradient(rgba(255,255,255,.026) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(255,255,255,.026) 1px,transparent 1px);
+  background-size:44px 44px;
+}
+body:after{
+  content:"";position:fixed;inset:0;pointer-events:none;
+  background:linear-gradient(transparent 50%,rgba(0,0,0,.16) 50%);
+  background-size:100% 4px;mix-blend-mode:soft-light;
+}
+.wrapper{max-width:1480px;margin:auto;padding:28px;position:relative}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;gap:18px}
+.brand{display:flex;align-items:center;gap:14px}
+.logo{width:52px;height:52px;border-radius:17px;background:linear-gradient(135deg,var(--green),var(--blue));box-shadow:0 0 38px rgba(0,255,170,.34);position:relative}
+.logo:after{content:"";position:absolute;inset:12px;border:2px solid rgba(0,0,0,.45);border-radius:10px}
+.brand h1{margin:0;font-size:24px;letter-spacing:.4px}.brand span{color:var(--muted);font-size:13px}
+.badges{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.badge{border:1px solid var(--border);color:var(--green);padding:9px 14px;border-radius:999px;background:rgba(0,255,170,.06);font-size:13px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:22px;backdrop-filter:blur(18px);box-shadow:0 22px 70px rgba(0,0,0,.42)}
+.grid-main{display:grid;grid-template-columns:1.2fr .8fr;gap:22px}
+.hero{min-height:355px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;width:410px;height:410px;border-radius:50%;background:radial-gradient(circle,rgba(0,255,170,.16),transparent 70%);right:-120px;top:-120px}
+.label{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:2px}
+.balance{font-size:60px;font-weight:880;margin:16px 0 4px;letter-spacing:-2.5px}.btc{font-size:22px;color:var(--green)}
+.actions{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap}
+button{border:0;padding:13px 18px;border-radius:14px;cursor:pointer;font-weight:850;color:#00140d;background:var(--green);box-shadow:0 0 24px rgba(0,255,170,.22)}
+button.secondary{background:rgba(255,255,255,.08);color:var(--text);border:1px solid rgba(255,255,255,.1)}button.danger{background:var(--red);color:white}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:22px}.stat{padding:16px;border-radius:18px;background:var(--panel);border:1px solid rgba(255,255,255,.075)}.stat b{display:block;font-size:23px;margin-top:7px}
+.progress{height:10px;background:rgba(255,255,255,.08);border-radius:999px;overflow:hidden;margin-top:18px}.progress div{height:100%;width:0%;background:linear-gradient(90deg,var(--green),var(--blue));box-shadow:0 0 20px var(--green);transition:.4s}
+.panel-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;gap:12px}.panel-title h2{margin:0;font-size:18px}
+.status-dot{display:flex;align-items:center;gap:8px;color:var(--green);font-size:13px}.status-dot:before{content:"";width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 16px var(--green)}
+.layout{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:22px}.layout-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:22px;margin-top:22px}
+.wallets,.queue,.notifications,.pipeline{max-height:380px;overflow:auto}
+.wallet,.queue-row,.note,.pipe-row{display:grid;grid-template-columns:42px 1fr auto;gap:12px;align-items:center;padding:12px;border-radius:15px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.055);margin-bottom:10px}
+.index{color:var(--green);font-weight:850}.address{direction:ltr;text-align:left;font-family:Consolas,monospace;font-size:12px;color:#cffff0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.amount{color:var(--yellow);font-size:12px}
+.log{height:430px;overflow:auto;background:#020409;border-radius:18px;border:1px solid rgba(0,255,170,.16);padding:18px;direction:ltr;text-align:left;font-family:Consolas,monospace;font-size:13px}.line{margin-bottom:10px;color:#bfffe9}.line.ok{color:var(--green)}.line.warn{color:var(--yellow)}.line.hash{color:var(--blue)}.line.err{color:var(--red)}.line.sys{color:#caa8ff}
+.chart{height:240px;width:100%;background:rgba(0,0,0,.18);border-radius:18px;border:1px solid rgba(255,255,255,.07)}
+.map{height:240px;border-radius:18px;position:relative;overflow:hidden;background:radial-gradient(circle at 50% 50%,rgba(50,183,255,.16),transparent 60%),rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.07)}
+.map:before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);background-size:28px 28px}
+.route{position:absolute;height:1px;background:linear-gradient(90deg,transparent,var(--green),transparent);opacity:.7;transform-origin:left;animation:route 2.4s infinite}
+.r1{left:18%;top:42%;width:42%;transform:rotate(-8deg)}.r2{left:47%;top:36%;width:30%;transform:rotate(22deg);animation-delay:.4s}.r3{left:34%;top:66%;width:35%;transform:rotate(-25deg);animation-delay:.8s}
+.dot{position:absolute;width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 18px var(--green);animation:pulse 1.6s infinite}.d1{left:20%;top:42%}.d2{left:48%;top:34%;animation-delay:.3s}.d3{left:72%;top:50%;animation-delay:.6s}.d4{left:61%;top:68%;animation-delay:.9s}.d5{left:32%;top:65%;animation-delay:1.1s}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:.65}50%{transform:scale(1.9);opacity:1}}@keyframes route{0%{opacity:.15}50%{opacity:.9}100%{opacity:.15}}
+.countdown{font-size:52px;font-weight:850;color:var(--green);margin:16px 0}.mini-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.history{width:100%;border-collapse:collapse;font-size:13px}.history th,.history td{padding:12px;border-bottom:1px solid rgba(255,255,255,.07);text-align:left}.history th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:1.5px}.history-wrap{max-height:360px;overflow:auto}
+.search{width:100%;padding:12px 14px;border-radius:14px;border:1px solid rgba(255,255,255,.1);background:rgba(0,0,0,.22);color:var(--text);margin-bottom:12px}
+.small{font-size:12px;color:var(--muted)}.oktxt{color:var(--green)}.warntxt{color:var(--yellow)}.redtxt{color:var(--red)}.bluetxt{color:var(--blue)}
+.stepper{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}.step{flex:1;min-width:120px;padding:12px;border-radius:15px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07)}.step.active{border-color:var(--green);box-shadow:0 0 22px rgba(0,255,170,.18)}.step.done{color:var(--green)}.step b{display:block;margin-bottom:5px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.68);display:none;align-items:center;justify-content:center;z-index:10;padding:24px}.modal.open{display:flex}.modal-box{width:min(760px,100%);background:#07101a;border:1px solid var(--border);border-radius:24px;padding:24px;box-shadow:0 0 80px rgba(0,255,170,.14)}
+.kv{display:grid;grid-template-columns:170px 1fr;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.07)}.kv span:last-child{direction:ltr;text-align:left;font-family:Consolas,monospace;color:#d6fff2}
+@media(max-width:1050px){.grid-main,.layout,.layout-3{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}.balance{font-size:40px}.topbar{align-items:flex-start;flex-direction:column}.kv{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrapper">
+  <div class="topbar">
+    <div class="brand"><div class="logo"></div><div><h1>Vault Distribution Console Pro</h1><span>Operational allocation dashboard</span></div></div>
+    <div class="badges"><div class="badge" id="modeBadge">SANDBOX MODE</div><div class="badge" id="clock">--:--:--</div><div class="badge" id="blockHeight">Block: 847,219</div></div>
+  </div>
+
+  <div class="grid-main">
+    <div class="card hero">
+      <div class="label">Main Vault Balance</div>
+      <div class="balance" id="usdBalance">$1,000,000.00</div>
+      <div class="btc" id="btcBalance">0.00000000 BTC</div>
+      <div class="progress"><div id="progressBar"></div></div>
+      <div class="stats">
+        <div class="stat"><span class="label">Sent Total</span><b id="sentTotal">$0.00</b></div>
+        <div class="stat"><span class="label">Transfers</span><b id="transferCount">0</b></div>
+        <div class="stat"><span class="label">Average Fee</span><b id="avgFee">$2.41</b></div>
+        <div class="stat"><span class="label">Next Amount</span><b>$1,000</b></div>
+      </div>
+      <div class="stepper" id="stepper"></div>
+      <div class="actions">
+        <button onclick="startBot()">Start Auto</button>
+        <button class="secondary" onclick="runPipeline()">Process Now</button>
+        <button class="danger" onclick="stopBot()">Stop</button>
+        <button class="secondary" onclick="exportHistory()">Export History</button>
+      </div>
+      <p class="small">All UI events are local sandbox actions for testing interface behavior.</p>
+    </div>
+
+    <div class="card">
+      <div class="panel-title"><h2>Engine Status</h2><div class="status-dot" id="statusText">READY</div></div>
+      <div class="mini-grid">
+        <div class="stat"><span class="label">Interval</span><b>5 Min</b></div>
+        <div class="stat"><span class="label">Policy</span><b>Round-Robin</b></div>
+        <div class="stat"><span class="label">Mempool</span><b id="mempool">12.4 MB</b></div>
+        <div class="stat"><span class="label">Priority</span><b>Normal</b></div>
+      </div>
+      <div class="countdown" id="countdown">05:00</div>
+      <span class="small">Next scheduled operation</span>
+    </div>
+  </div>
+
+  <div class="layout-3">
+    <div class="card"><div class="panel-title"><h2>Balance Chart</h2><span class="label">LIVE</span></div><canvas class="chart" id="balanceChart"></canvas></div>
+    <div class="card"><div class="panel-title"><h2>Network Activity</h2><span class="label">VISUAL</span></div><div class="map"><div class="route r1"></div><div class="route r2"></div><div class="route r3"></div><div class="dot d1"></div><div class="dot d2"></div><div class="dot d3"></div><div class="dot d4"></div><div class="dot d5"></div></div></div>
+    <div class="card"><div class="panel-title"><h2>System Monitor</h2><span class="label">LIVE</span></div><div class="mini-grid"><div class="stat"><span class="label">CPU</span><b id="cpu">14%</b></div><div class="stat"><span class="label">Memory</span><b id="mem">1.3 GB</b></div><div class="stat"><span class="label">Queue</span><b id="queueCount">10</b></div><div class="stat"><span class="label">Uptime</span><b id="uptime">00:00</b></div></div></div>
+  </div>
+
+  <div class="layout">
+    <div class="card">
+      <div class="panel-title"><h2>Wallet Targets</h2><span class="label" id="walletCount"></span></div>
+      <div class="wallets" id="walletList"></div>
+    </div>
+    <div class="card">
+      <div class="panel-title"><h2>Execution Pipeline</h2><span class="label">PROCESS</span></div>
+      <div class="pipeline" id="pipelineList"></div>
+    </div>
+  </div>
+
+  <div class="layout">
+    <div class="card">
+      <div class="panel-title"><h2>Transaction Stream</h2><span class="label">LIVE LOGS</span></div>
+      <div class="log" id="log"></div>
+    </div>
+    <div class="card">
+      <div class="panel-title"><h2>Notification Center</h2><span class="label">EVENTS</span></div>
+      <div class="notifications" id="notifications"></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:22px">
+    <div class="panel-title"><h2>History</h2><span class="label">CLICK ROW FOR DETAILS</span></div>
+    <input class="search" id="historySearch" placeholder="Search history..." oninput="renderHistory()" />
+    <div class="history-wrap">
+      <table class="history">
+        <thead><tr><th>Time</th><th>Status</th><th>Reference</th><th>Destination</th><th>Amount</th><th>Fee</th><th>Confirmations</th></tr></thead>
+        <tbody id="historyBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="detailsModal" onclick="closeModal(event)">
+  <div class="modal-box">
+    <div class="panel-title"><h2>Operation Details</h2><button class="secondary" onclick="document.getElementById('detailsModal').classList.remove('open')">Close</button></div>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<script>
+let balanceUSD=1000000, initialBalance=1000000, btcPrice=64000, transferAmount=1000;
+let currentWallet=0, timer=null, sentTotal=0, transferCount=0, secondsLeft=300, uptimeSeconds=0, block=847219;
+let balancePoints=[balanceUSD], history=[], processing=false;
+const steps=["Validate","Quote Fee","Prepare","Broadcast","Confirm"];
+const pipelineBase=[
+  ["Key policy check","Waiting"],["Address format validation","Waiting"],["Fee estimation","Waiting"],
+  ["Payload preparation","Waiting"],["Broadcast queue","Waiting"],["Confirmation watcher","Waiting"]
+];
+
+/* PUT YOUR WALLET ADDRESSES HERE */
+const wallets=[
+  "YOUR_WALLET_ADDRESS_1","YOUR_WALLET_ADDRESS_2","YOUR_WALLET_ADDRESS_3","YOUR_WALLET_ADDRESS_4","YOUR_WALLET_ADDRESS_5",
+  "YOUR_WALLET_ADDRESS_6","YOUR_WALLET_ADDRESS_7","YOUR_WALLET_ADDRESS_8","YOUR_WALLET_ADDRESS_9","YOUR_WALLET_ADDRESS_10"
+];
+
+function money(n){return "$"+n.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2})}
+function shortAddr(a){return a.length>18?a.slice(0,10)+"..."+a.slice(-8):a}
+function txHash(){const c="abcdef0123456789";let h="";for(let i=0;i<64;i++)h+=c[Math.floor(Math.random()*c.length)];return h}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
+function setClock(){document.getElementById("clock").innerText=new Date().toLocaleTimeString()}
+function renderStepper(active=-1){
+  const box=document.getElementById("stepper"); box.innerHTML="";
+  steps.forEach((s,i)=>box.innerHTML+=`<div class="step ${i<active?'done':''} ${i===active?'active':''}"><b>${String(i+1).padStart(2,"0")}</b><span>${s}</span></div>`);
+}
+function updateUI(){
+  document.getElementById("usdBalance").innerText=money(balanceUSD);
+  document.getElementById("btcBalance").innerText=(balanceUSD/btcPrice).toFixed(8)+" BTC";
+  document.getElementById("sentTotal").innerText=money(sentTotal);
+  document.getElementById("transferCount").innerText=transferCount;
+  document.getElementById("avgFee").innerText=money(2.1+Math.random()*1.2);
+  document.getElementById("progressBar").style.width=(((initialBalance-balanceUSD)/initialBalance)*100)+"%";
+  document.getElementById("queueCount").innerText=wallets.length-currentWallet;
+  drawChart();
+}
+function renderWallets(){
+  const box=document.getElementById("walletList");document.getElementById("walletCount").innerText=wallets.length+" WALLETS";box.innerHTML="";
+  wallets.forEach((wallet,index)=>box.innerHTML+=`<div class="wallet"><div class="index">#${index+1}</div><div class="address">${wallet}</div><div class="amount">${index===currentWallet?'<span class="warntxt">NEXT</span>':'$1,000'}</div></div>`);
+}
+function renderPipeline(active=-1){
+  const box=document.getElementById("pipelineList");box.innerHTML="";
+  pipelineBase.forEach((p,i)=>{
+    let status=i<active?"Completed":i===active?"Processing":p[1];
+    let cls=i<active?"oktxt":i===active?"warntxt":"small";
+    box.innerHTML+=`<div class="pipe-row"><div class="index">${i<active?'✓':i===active?'↻':'·'}</div><div><b>${p[0]}</b><br><span class="${cls}">${status}</span></div><div class="small">${i===active?'live':''}</div></div>`;
+  });
+}
+function log(text,type="ok"){const box=document.getElementById("log"),time=new Date().toLocaleTimeString();box.innerHTML+=`<div class="line ${type}">[${time}] ${text}</div>`;box.scrollTop=box.scrollHeight}
+function notify(text,type="oktxt"){const box=document.getElementById("notifications"),time=new Date().toLocaleTimeString();box.innerHTML=`<div class="note"><div class="index">●</div><div><b class="${type}">${text}</b><br><span class="small">${time}</span></div><div></div></div>`+box.innerHTML}
+async function runPipeline(){
+  if(processing)return;
+  if(balanceUSD<transferAmount){log("ERROR: Insufficient balance.","err");notify("Insufficient balance","redtxt");return}
+  processing=true; document.getElementById("statusText").innerText="PROCESSING";
+  const target=wallets[currentWallet], hash=txHash(), fee=2.15+Math.random()*1.35, sats=Math.floor((fee/btcPrice)*100000000), btcAmount=transferAmount/btcPrice;
+  log("Operation created: OP-"+Date.now(),"sys"); notify("New operation queued","warntxt");
+  for(let i=0;i<steps.length;i++){
+    renderStepper(i); renderPipeline(i); log(steps[i]+" stage started...","sys"); await sleep(520+Math.random()*520);
+    if(i===1)log("Estimated fee: "+money(fee)+" / "+sats+" sats","warn");
+    if(i===3)log("Broadcast reference: "+hash,"hash");
+  }
+  balanceUSD-=transferAmount; sentTotal+=transferAmount; transferCount++; balancePoints.push(balanceUSD); if(balancePoints.length>28)balancePoints.shift();
+  const row={time:new Date().toLocaleTimeString(),status:"Confirmed",ref:hash,destination:target,amount:money(transferAmount),fee:money(fee),confirmations:"6/6",duration:(2.5+Math.random()*2.2).toFixed(2)+"s",btc:btcAmount.toFixed(8)+" BTC"};
+  history.unshift(row);
+  log("Destination: "+target); log("Amount: "+money(transferAmount)+" / "+row.btc); log("Confirmations: 6/6","ok"); log("Status: COMPLETED");
+  notify("Operation confirmed: wallet #"+(currentWallet+1)); currentWallet=(currentWallet+1)%wallets.length; secondsLeft=300;
+  renderStepper(-1); renderPipeline(-1); updateUI(); renderWallets(); renderHistory(); document.getElementById("statusText").innerText=timer?"ACTIVE":"READY"; processing=false;
+}
+function startBot(){if(timer)return;document.getElementById("statusText").innerText="ACTIVE";log("Distribution engine started.","warn");notify("Engine started","warntxt");timer=setInterval(runPipeline,5*60*1000)}
+function stopBot(){clearInterval(timer);timer=null;document.getElementById("statusText").innerText="PAUSED";log("Distribution engine stopped.","warn");notify("Engine paused","warntxt")}
+function tick(){
+  setClock(); uptimeSeconds++; block+=Math.random()>.93?1:0; document.getElementById("blockHeight").innerText="Block: "+block.toLocaleString("en-US");
+  document.getElementById("uptime").innerText=String(Math.floor(uptimeSeconds/60)).padStart(2,"0")+":"+String(uptimeSeconds%60).padStart(2,"0");
+  document.getElementById("cpu").innerText=(10+Math.floor(Math.random()*28))+"%"; document.getElementById("mem").innerText=(1.1+Math.random()*1.6).toFixed(1)+" GB"; document.getElementById("mempool").innerText=(8+Math.random()*9).toFixed(1)+" MB";
+  if(timer&&secondsLeft>0)secondsLeft--; document.getElementById("countdown").innerText=String(Math.floor(secondsLeft/60)).padStart(2,"0")+":"+String(secondsLeft%60).padStart(2,"0")
+}
+function drawChart(){
+  const c=document.getElementById("balanceChart"),ctx=c.getContext("2d"),w=c.width=c.offsetWidth*devicePixelRatio,h=c.height=c.offsetHeight*devicePixelRatio;
+  ctx.clearRect(0,0,w,h);ctx.strokeStyle="rgba(255,255,255,.08)";ctx.lineWidth=1;for(let i=0;i<5;i++){ctx.beginPath();ctx.moveTo(0,h*i/4);ctx.lineTo(w,h*i/4);ctx.stroke()}
+  const min=Math.min(...balancePoints)-1000,max=Math.max(...balancePoints)+1000;ctx.strokeStyle="#00ffaa";ctx.lineWidth=3*devicePixelRatio;ctx.beginPath();
+  balancePoints.forEach((p,i)=>{const x=i/(balancePoints.length-1||1)*w,y=h-((p-min)/(max-min))*h;if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y)});ctx.stroke();
+}
+function renderHistory(){
+  const q=document.getElementById("historySearch").value.toLowerCase(),body=document.getElementById("historyBody");body.innerHTML="";
+  history.filter(r=>Object.values(r).join(" ").toLowerCase().includes(q)).forEach((r,i)=>{
+    body.innerHTML+=`<tr onclick="openDetails(${i})" style="cursor:pointer"><td>${r.time}</td><td class="oktxt">${r.status}</td><td>${r.ref.slice(0,16)}...</td><td>${shortAddr(r.destination)}</td><td>${r.amount}</td><td>${r.fee}</td><td>${r.confirmations}</td></tr>`;
+  });
+}
+function openDetails(i){
+  const r=history[i],box=document.getElementById("modalContent");
+  box.innerHTML=`<div class="kv"><span>Status</span><span>${r.status}</span></div><div class="kv"><span>Reference</span><span>${r.ref}</span></div><div class="kv"><span>Destination</span><span>${r.destination}</span></div><div class="kv"><span>Amount</span><span>${r.amount} / ${r.btc}</span></div><div class="kv"><span>Fee</span><span>${r.fee}</span></div><div class="kv"><span>Confirmations</span><span>${r.confirmations}</span></div><div class="kv"><span>Duration</span><span>${r.duration}</span></div>`;
+  document.getElementById("detailsModal").classList.add("open");
+}
+function closeModal(e){if(e.target.id==="detailsModal")e.target.classList.remove("open")}
+function exportHistory(){
+  const rows=[["Time","Status","Reference","Destination","Amount","Fee","Confirmations"],...history.map(r=>[r.time,r.status,r.ref,r.destination,r.amount,r.fee,r.confirmations])];
+  const csv=rows.map(r=>r.map(x=>`"${String(x).replaceAll('"','""')}"`).join(",")).join("\n");
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));a.download="vault-history.csv";a.click()
+}
+renderStepper();renderPipeline();renderWallets();updateUI();setInterval(tick,1000);
+log("Console initialized.","sys");log("Vault balance loaded: $1,000,000.00");log("Wallet targets loaded: "+wallets.length);notify("Console initialized");
+</script>
+</body>
+</html>
